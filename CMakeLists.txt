@@ -1,58 +1,54 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.5)
 
-# Название проекта
-project(Template)
+project(logic_elements LANGUAGES CXX)
 
-# Переменная с именем исполняемого файла
-set(EXECUTABLE ${PROJECT_NAME})
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Язык C и C++
-enable_language(CXX C)
 
-# Файлы с исходым кодом
-FILE(
-    GLOB 
-    Sources 
-    "Core/Src/*.cpp"
-    "Core/Src/*.c"
-    )
+set(FLTK_SKIP_FLUID True)
+set(OpenGL_GL_PREFERENCE "GLVND")
 
-# Директории с заголовочными файлами
-set(
-    Includes
-    Core/Inc
+find_package(FLTK REQUIRED)
+find_package(OpenGL REQUIRED)
+
+
+set(GRAPHLIB_DIR ".")
+
+include_directories(
+    ${GRAPHLIB_DIR}
+    SYSTEM
+    ${FLTK_INCLUDE_DIR}
 )
 
-# Добавление файлов исходного кода
+link_directories(
+    ${FLTK_INCLUDE_DIR}/../lib
+)
+
 add_executable(
-    ${EXECUTABLE}
-    ${Sources}
+    logic_elements
+    ${GRAPHLIB_DIR}/Graph_lib/Graph.cpp
+    ${GRAPHLIB_DIR}/Graph_lib/Graph.h
+    ${GRAPHLIB_DIR}/Graph_lib/GUI.cpp
+    ${GRAPHLIB_DIR}/Graph_lib/GUI.h
+    ${GRAPHLIB_DIR}/Graph_lib/Window.cpp
+    ${GRAPHLIB_DIR}/Graph_lib/Window.h
+    ${GRAPHLIB_DIR}/Graph_ext.cpp
+    ${GRAPHLIB_DIR}/Graph_ext.h
+    logic.cpp
+    logic.h
+    logic_shapes.cpp
+    logic_shapes.h
+    main.cpp
 )
 
-# Директории с *.h файлами
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${Includes}
+target_link_libraries(
+    logic_elements
+    ${FLTK_LIBRARIES}
+    fltk_png
+    fltk_z
+    fltk_jpeg
+    ${OPENGL_LIBRARIES}
 )
 
-# Подключение инструментов для работы с модулями
-include(common-tools.cmake)
-
-# Флаги компиляции
-add_compile_options(
-    $<$<COMPILE_LANGUAGE:CXX>:
-    -fno-rtti 
-    -fno-exceptions 
-    $<$<CONFIG:Debug>:
-    -Og>
-    $<$<CONFIG:Release>:
-    -Os>> 
-    $<$<COMPILE_LANGUAGE:C>:
-    $<$<CONFIG:Debug>:
-    -Og>
-    $<$<CONFIG:Release>:
-    -Os>>
-)
-
-
-
-                    
+install(TARGETS logic_elements)
